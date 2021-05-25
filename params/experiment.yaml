@@ -1,0 +1,34 @@
+seeds: 10
+
+# Implemented: "single_tasks", "fusion", "ensemble"
+mode: "single_tasks"
+
+# Implemented: "gnb", "lr", "rf", "dummy"
+classifiers: [ lr, rf ]
+
+# Implemented: "cookie_theft", "pupil_calib", "memory", "reading"
+tasks: [ memory, pupil_calib ]
+
+features_set: [ "eye_1", "eye_2" ]
+
+task:
+  -memory: {
+    "eye":
+      { "eye_1": [ ],
+        "eye_2": [ ] },
+    "lang":
+      {
+        "audio": {
+          "audio_1": [ ],
+          "audio_2": [ ]
+        },
+        "text": {
+          "text_1": [ ],
+          "text_2": [ ]
+        }
+      }
+  }
+  -reading: {
+    "eye_1": [ ],
+    "eye_2": [ ]
+  }
