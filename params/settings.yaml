@@ -1,0 +1,16 @@
+seeds: 10
+
+# Implemented: "single_tasks", "fusion", "ensemble"
+mode: "single_tasks"
+
+# Implemented: "gnb", "lr", "rf", "dummy"
+classifiers: [ lr, rf ]
+
+# Implemented: "cookie_theft", "pupil_calib", "memory", "reading"
+tasks: [ Memory, PupilCalib ]
+
+# eye tracking calibration flag for participant log
+# 1: Keep all data
+# 2: Only reject participants for whom calibration failed
+# 3: Reject all participants for whom calibration was not perfect
+eye_tracking_calibration_flag : 2

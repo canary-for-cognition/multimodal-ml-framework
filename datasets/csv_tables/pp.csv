@@ -1,0 +1,14 @@
+,0,1,2,3,4,5,6,7,8,9,10
+0,0,eye_aoi_quadrant.csv,eye_path.csv,eye_distance.csv,eye_fixation.csv,eye_saccade.csv,eye_aoi_halves.csv,eye_fraser_reading.csv,eye_blink.csv,eye_aoi_infounit.csv,eye_pupil.csv
+1,EA-175,False,False,False,False,False,False,True,False,False,False
+2,EE-031,False,False,False,False,False,False,True,False,False,False
+3,EE-087,False,False,False,False,False,False,True,False,False,False
+4,EL-003,False,False,False,False,False,False,True,False,False,False
+5,EO-011,False,False,False,False,False,False,True,False,False,False
+6,ER-017,False,False,False,False,False,False,True,False,False,False
+7,EY-035,False,False,False,False,False,False,True,False,False,False
+8,HA-104,False,False,False,False,False,False,True,False,False,False
+9,HE-099,False,False,False,False,False,False,True,False,False,False
+10,HL-062,False,False,False,False,False,False,True,False,False,False
+11,HL-145,False,False,False,False,False,False,True,False,False,False
+12,HO-187,False,False,False,False,False,False,True,False,False,False

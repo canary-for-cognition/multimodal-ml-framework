@@ -1,0 +1,22 @@
+modalities: {
+  "eye": False,
+  "speech": True,
+  "moca": False,
+  "multimodal":False
+}
+
+feature_sets: {
+  "eye":
+    { "eye_1": [ ],
+      "eye_2": [ ] },
+  "lang":
+    {
+      "audio": {
+        "audio_1": [ ],
+        "audio_2": [ ]
+      },
+      "text": {
+        "text_1": [ ],
+        "text_2": [ ]
+      }
+    }

@@ -1,0 +1,63 @@
+# maps filenames to shorter, easier to remember names
+filenames: {
+"acoustic" : "canary_acoustic_features",
+"diagnosis" : "canary_diagnosis",
+"eye_aoi_halves" : "canary_eye_aoi_halves_features",
+"eye_aoi_infounit" : "canary_eye_aoi_infounit_features",
+"eye_aoi_quadrant" : "canary_eye_aoi_quadrant_features",
+"eye_blink" : "canary_eye_blink_features",
+"eye_distance" : "canary_eye_distance_features",
+"eye_fixation" : "canary_eye_fixation_features",
+"eye_fraser_reading" : "canary_eye_fraser_reading_features",
+"eye_path" : "canary_eye_path_features",
+"eye_pupil" : "canary_eye_pupil_features",
+"eye_saccade" : "canary_eye_saccade_features",
+"fraser" : "canary_fraser_features",
+"mm_aoi_specific" : "canary_mm_aoi_specific_features",
+"mm_overall" : "canary_mm_overall_features",
+"moca" : "canary_moca",
+"new_language" : "results_new_features_Language",
+"participant_log" : "canary_participant_log",
+"redcap" : "canary_redcap_repository",
+"text" : "canary_text_features"
+}
+
+# maps filenames with .csv extension to shorter, easier to remember names
+filenames_csv: {
+"acoustic" : "canary_acoustic_features.csv",
+"diagnosis" : "canary_diagnosis.csv",
+"eye_aoi_halves" : "canary_eye_aoi_halves_features.csv",
+"eye_aoi_infounit" : "canary_eye_aoi_infounit_features.csv",
+"eye_aoi_quadrant" : "canary_eye_aoi_quadrant_features.csv",
+"eye_blink" : "canary_eye_blink_features.csv",
+"eye_distance" : "canary_eye_distance_features.csv",
+"eye_fixation" : "canary_eye_fixation_features.csv",
+"eye_fraser_reading" : "canary_eye_fraser_reading_features.csv",
+"eye_path" : "canary_eye_path_features.csv",
+"eye_pupil" : "canary_eye_pupil_features.csv",
+"eye_saccade" : "canary_eye_saccade_features.csv",
+"fraser" : "canary_fraser_features.csv",
+"mm_aoi_specific" : "canary_mm_aoi_specific_features.csv",
+"mm_overall" : "canary_mm_overall_features.csv",
+"moca" : "canary_moca.csv",
+"new_language" : "results_new_features_Language.csv",
+"participant_log" : "canary_participant_log.csv",
+"redcap" : "canary_redcap_repository.csv",
+"text" : "canary_text_features.csv"
+}
+
+# maps each modality with their respective datasets
+modality_wise_datasets: {
+"eye" : ["eye_fixation.csv", "participant_log.csv"],
+"speech" : ["text.csv", "acoustic.csv"],
+"moca" : ["moca.csv"],
+"multimodal" : ["mm_overall.csv"]
+}
+
+# maps each modality with respective dataset files
+modality_wise_files: {
+"eye" : ["canary_eye_fixation_features.csv", "canary_participant_log.csv"],
+"speech" : ["canary_text_features.csv", "canary_acoustic_features.csv"],
+"moca" : ["canary_moca.csv"],
+"multimodal" : ["canary_mm_overall_features.csv"]
+}

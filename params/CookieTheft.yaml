@@ -1,0 +1,35 @@
+#modalities: {
+#  "eye": True,
+#  "speech": True,
+#  "moca": False,
+#  "multimodal": False
+#}
+
+modalities: ["eye", "speech"]
+
+# all features here
+features: {
+  "eye": {
+    "Eye": ["ET_fixation",
+            "ET_saccade",
+            "ET_path",
+            "ET_pupil",
+            "ET_infounit"
+           ]
+         },
+  "lang": {
+    "Language": ["cfg",
+                 "syntactic_complexity", 
+                 "psycholinguistic", 
+                 "vocabulary_richness",
+                 "repetitiveness",
+                 "parts_of_speech",
+                 "information_content"
+                ]
+           }
+}
+# features referenced by feature sets (current way)
+feature_sets: {
+  "eye": "Eye",  
+  "lang": "Language"
+}

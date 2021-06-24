@@ -1,0 +1,12 @@
+[
+"number_of_pauses",
+"maximum_pause_duration",
+"pause_rate",
+"duration",
+"phonation_time",
+"proportion_of_time_spent_speaking",
+"syllable_count",
+"speech_rate",
+"average_syllable_duration",
+"pause_per_syllable"
+]

@@ -5,10 +5,11 @@ from classes.handlers.ParamsHandler import ParamsHandler
 
 
 def main():
-    params = ParamsHandler.load_parameters()
+    # load_parameters to take the name of settings file (without .yaml extension)
+    params = ParamsHandler.load_parameters('settings')
     mode = params["mode"]
     tasks = params["tasks"]
-    classifiers = params["models"]
+    classifiers = params["classifiers"]
 
     tasks_data = DataHandler.load_data(tasks, mode)
     models = ModelsHandler.get_models(classifiers)

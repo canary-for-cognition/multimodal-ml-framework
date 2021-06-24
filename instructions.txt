@@ -1,0 +1,16 @@
+# create env:
+conda create --name canary2 python=3.8.5
+
+# activate env:
+conda activate canary2
+
+# if you want to install dependencies from scratch:
+pip install --upgrade pandas
+pip install --upgrade numpy
+pip install matplotlib==3.3.2
+pip install seaborn==0.11.1
+pip install --upgrade PyYAML
+
+# to write all installed packages in the environment into a file:
+pip freeze > ~/CANARY-NEW/requirements.txt
+

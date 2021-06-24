@@ -1,4 +1,5 @@
 from typing import Dict
+import yaml
 
 
 class ParamsHandler:
@@ -6,5 +7,8 @@ class ParamsHandler:
         pass
 
     @staticmethod
-    def load_parameters() -> Dict:
-        pass
+    def load_parameters(filename: str) -> Dict:
+        with open('./params/' + filename + '.yaml') as file:
+            config = yaml.load(file, Loader=yaml.FullLoader)
+
+        return config
