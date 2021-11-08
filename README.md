@@ -1,4 +1,4 @@
-# Redesigned CANARY Framework
+# multimodal-ml-framework
  
 The updated Machine Learning framework for the CANARY project. This framework utilizes eye-tracking data and speech data to predict if a participant is a patient or a healthy control. 
 
