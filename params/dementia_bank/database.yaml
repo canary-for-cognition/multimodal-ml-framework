@@ -1,0 +1,9 @@
+## Database.YAML file
+## this file is used to map the names of csv files in ./dataset/csv_tables/ to shorter keywords.
+## no need to change anything here.
+
+# maps each modality with their respective datasets
+modality_wise_datasets: {
+"speech" : ["text.csv", "acoustic.csv", "discourse.csv", "demographic.csv"],
+}
+

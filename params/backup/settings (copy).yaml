@@ -1,0 +1,47 @@
+seeds: 10
+
+# number of folds to split the data into
+folds: 10
+
+# RandomSeed
+random_seed: 0
+
+# Implemented: "single_tasks", "fusion", "ensemble"
+mode: "single_tasks"
+
+# Implemented: "RandomForest", "GausNaiveBayes", "LogReg", "Dummy"
+classifiers: ["RandomForest", "GausNaiveBayes", "LogReg"]
+
+# Implemented: "cookie_theft", "pupil_calib", "memory", "reading"
+tasks: ["PupilCalib", "CookieTheft", "Reading", "Memory"]
+
+# output folder: specify which folder you'd like the results to go to (will be sent under ../results/)
+# if nothing is specified, then a default name is chosen based on timestamp
+## default folder name would be mode_task_name_classifiers_timestamp
+## copy this file over in the results after results are generated.
+output_folder: "bruh" # + _timestamp
+
+# any conditions on PID list extraction
+# options can be "default",
+PID_extraction_method: "default"
+
+# PID reuse flag - if this is True, framework will find PIDs under the assets folder based on the conditions specified here. if found, reuse otherwise recreate.
+PID_custom_use_flag: True
+
+# filename of PID_reuse - will be under ../assets/PIDs/
+custom_PIDs_filename: ""
+
+# eye tracking calibration flag for participant log
+# 1: Keep all data
+# 2: Only reject participants for whom calibration failed
+# 3: Reject all participants for whom calibration was not perfect
+eye_tracking_calibration_flag : 2
+
+# correlation coefficients
+# any features with higher pairwise correlation than this will be removed
+fs_pairwise_correlation: .85
+# any features having correlation with the outcome lower than this will be removed
+fs_outcome_correlation: .2
+
+# REDCap API Key to be specified here
+redcap_api_key: "A15772EE1FDA385ABB4C0353B21D7B8D"

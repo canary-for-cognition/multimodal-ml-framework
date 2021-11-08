@@ -1,16 +1,63 @@
+## Settings.YAML file
+## this file is used to define the main parameters the framework will use.
+## before each experiment, make sure to edit these parameters with what's needed.
+## for each parameter, a set of possible options are given in the comments.
+## to add support for more classifiers, you can edit ./classes/handlers/ModelsHandler and choose the respective classifier here.
+
+
+# number of seeds for which to run the framework
 seeds: 10
 
-# Implemented: "single_tasks", "fusion", "ensemble"
-mode: "single_tasks"
+# number of folds to split the data into
+folds: 10
 
-# Implemented: "gnb", "lr", "rf", "dummy"
-classifiers: [ lr, rf ]
+# RandomSeed (not currently being used)
+random_seed: 0
 
-# Implemented: "cookie_theft", "pupil_calib", "memory", "reading"
-tasks: [ Memory, PupilCalib ]
+# dataset: "canary" or "dementia_bank"
+dataset: "canary"
 
-# eye tracking calibration flag for participant log
+# mode to run the framework through: 
+## for "canary" dataset (only one): "single_tasks", "fusion", "ensemble"
+## for "dementia_bank" dataset: "single_tasks"
+mode: "ensemble"
+
+# aggregation_method: for fusion and ensemble, the method of aggregating results
+# can be "average" or "stack"
+aggregation_method: "stack"
+
+# classifiers to use (either one or many in a list): "RandomForest", "GausNaiveBayes", "LogReg", "Dummy"
+classifiers: ["RandomForest", "GausNaiveBayes", "LogReg"]
+
+# meta_classifier to use if the aggregation method above is "stack"
+# possible options - "LogReg", "RandomForest", "AdaBoost", "GradBoost", "Bagging"
+meta_classifier: "RandomForest"
+
+# tasks to run
+## for "canary" dataset, (either one or many in a list): "PupilCalib", "CookieTheft", "Reading", "Memory"
+## for "dementia_bank" dataset (in square brackets): "dementia_bank"
+tasks:  ["PupilCalib", "CookieTheft", "Reading", "Memory"]
+# tasks: ["dementia_bank"]
+
+# output folder: specify which folder you'd like the results to go to (will be sent under ../results/dataset/)
+output_folder: "stacking_RF_test2"
+
+# any conditions on PID list extraction
+# options can be "default" (leave this as default)
+PID_extraction_method: "default"
+
+# eye tracking calibration flag for participant_log.csv
 # 1: Keep all data
 # 2: Only reject participants for whom calibration failed
 # 3: Reject all participants for whom calibration was not perfect
+# leave this as is
 eye_tracking_calibration_flag : 2
+
+# correlation coefficients for feature selection
+# any features with higher pairwise correlation than this will be removed
+fs_pairwise_correlation: .85
+# any features having correlation with the outcome lower than this will be removed
+fs_outcome_correlation: .2
+
+# REDCap API Key to be specified here
+redcap_api_key: "A15772EE1FDA385ABB4C0353B21D7B8D"

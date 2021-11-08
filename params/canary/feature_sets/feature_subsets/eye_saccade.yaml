@@ -1,0 +1,16 @@
+[
+"numsaccades",
+"sumsaccadedistance",
+"meansaccadedistance",
+"stddevsaccadedistance",
+"longestsaccadedistance",
+"sumsaccadeduration",
+"meansaccadeduration",
+"stddevsaccadeduration",
+"longestsaccadeduration",
+"meansaccadespeed",
+"stddevsaccadespeed",
+"minsaccadespeed",
+"maxsaccadespeed",
+"fixationsaccadetimeratio"
+]

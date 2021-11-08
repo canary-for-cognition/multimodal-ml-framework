@@ -1,0 +1,14 @@
+[
+"meanabspathangles",
+"meanpathdistance",
+"meanrelpathangles",
+"stddevabspathangles",
+"stddevpathdistance",
+"stddevrelpathangles",
+"eyemovementvelocity",
+"abspathanglesrate",
+"relpathanglesrate",
+"sumabspathangles",
+"sumpathdistance",
+"sumrelpathangles"
+]

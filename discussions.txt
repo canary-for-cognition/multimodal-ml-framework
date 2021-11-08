@@ -1,0 +1,15 @@
+- *** MOST IMPORTANT *** remove Caitlin's RedCAP API from settings.yaml
+
+- master list of pids with tasks/modalities in a 1/0 format in a separate script. this would work as a    master list, so that the code can extract PIDs, based on the task/modality mentioned.
+
+- have a PID reuse flag, or have the PIDs be saved in a specific naming format so that whenever same parameters are used the PIDextractor doesn't have to re-extract PIDs (maybe, since PID extraction doesn't take that long).
+
+- add support for custom conditions that we may specify (custom conditions can refer to a specific set of participants, like if they were wearing glasses or not, etc).
+
+- change naming scheme of output files
+
+- better name for inner_list_of_pids
+
+- use PID_extraction_method somehow (tie it up with custom conditions).
+
+

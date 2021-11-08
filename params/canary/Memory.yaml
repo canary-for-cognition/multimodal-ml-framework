@@ -1,0 +1,28 @@
+#modalities: {
+#  "eye": False,
+#  "speech": True,
+#  "moca": False,
+#  "multimodal": False
+#}
+modalities: ["speech"]
+# all features here
+features: {
+  "speech": {
+    "Audio": ["acoustics"],
+    "Text":  ["syntactic_complexity", 
+              "psycholinguistic",
+              "vocabulary_richness", 
+              "repetitiveness",
+              "parts_of_speech"
+             ]
+           }
+}
+# features referenced by feature sets (current way)
+# feature_sets: {
+#   "lang": ["Audio", "Text"]
+# }
+
+feature_sets: {
+  "lang1": "Audio", 
+  "lang2": "Text"
+}

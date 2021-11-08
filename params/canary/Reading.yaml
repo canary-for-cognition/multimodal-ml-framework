@@ -1,0 +1,37 @@
+#modalities: {
+#  "eye": True,
+#  "speech": True,
+#  "moca": False,
+#  "multimodal": False
+#}
+modalities : ["eye", "speech"]
+# all features here
+features: {
+  "eye": {
+    "Eye_Reading": ["ET_fraser_reading",
+                    "ET_fixation", 
+                    "ET_saccade",
+                    "ET_path",
+                    "ET_pupil"
+                   ]
+          },
+  "speech": {
+    "NLP_Reading": ["acoustics",
+                    "number_of_pauses",
+                    "maximum_pause_duration",
+                    "pause_rate",
+                    "duration",
+                    "phonation_time",
+                    "proportion_of_time_spent_speaking",
+                    "syllable_count",
+                    "speech_rate",
+                    "average_syllable_duration",
+                    "pause_per_syllable"
+                   ] 
+            }
+}
+# features referenced by feature sets (current way)
+feature_sets: {
+  "eye1": "Eye_Reading",
+  "lang1": "NLP_Reading"
+}
