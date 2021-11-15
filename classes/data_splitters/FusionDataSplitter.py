@@ -1,11 +1,12 @@
-from classes.data_splitters.DataSplitter import DataSplitter
-from classes.handlers.ParamsHandler import ParamsHandler
+import copy
+import os
+import random
 
 import numpy as np
 import pandas as pd
-import os
-import random
-import copy
+
+from classes.data_splitters.DataSplitter import DataSplitter
+from classes.handlers.ParamsHandler import ParamsHandler
 
 
 class FusionDataSplitter(DataSplitter):
@@ -32,17 +33,18 @@ class FusionDataSplitter(DataSplitter):
         if method == 1:
             # get list of superset_ids from the saved file
             # super_pids_file_path = os.path.join('assets', output_folder, extraction_method + '_super_pids.csv')
-            super_pids_file_path = os.path.join(os.getcwd(), 'assets', dataset_name, 'PIDs', self.mode +
+            super_pids_file_path = os.path.join(os.getcwd(), 'assets', dataset_name, 'PIDs', self._mode +
                                                 '_' + extraction_method + '_super_pids.csv')
             superset_ids = list(pd.read_csv(super_pids_file_path)['interview'])
 
             # random shuffle based on random seed
             random.Random(self.random_seed).shuffle(superset_ids)
-            splits = np.array_split(superset_ids, self.nfolds)
+            splits = np.array_split(superset_ids, self._num_folds)
 
         # option 2: Split an intersection of pids across tasks, then split the out-of-intersection pids, then merge them equally
         if method == 2:
-            pid_file_paths = {task: os.path.join('results', output_folder, extraction_method + '_' + task + '_pids.csv') for task in tasks}
+            pid_file_paths = {task: os.path.join('results', output_folder, extraction_method + '_' + task + '_pids.csv')
+                              for task in tasks}
             pids = [list(pd.read_csv(pid_file_paths[task])['interview']) for task in tasks]
 
             uni_pids = inter_pids = copy.deepcopy(pids)
@@ -54,7 +56,7 @@ class FusionDataSplitter(DataSplitter):
 
             # creating union of pids across tasks
             while len(uni_pids) > 1:
-                uni_pids = [np.union1d(uni_pids[i], uni_pids[i+1]) for i in range(len(uni_pids) - 1)]
+                uni_pids = [np.union1d(uni_pids[i], uni_pids[i + 1]) for i in range(len(uni_pids) - 1)]
             uni_pids = uni_pids[0]
 
             # difference in uni_pids and inter_pids
@@ -64,11 +66,11 @@ class FusionDataSplitter(DataSplitter):
             random.Random(self.random_seed).shuffle(inter_pids)
             random.Random(self.random_seed).shuffle(diff_pids)
 
-            inter_splits = np.array_split(inter_pids, self.nfolds)
-            diff_splits = np.array_split(diff_pids, self.nfolds)
+            inter_splits = np.array_split(inter_pids, self._num_folds)
+            diff_splits = np.array_split(diff_pids, self._num_folds)
 
             splits = []
-            for i in range(self.nfolds):
+            for i in range(self._num_folds):
                 splits.append(np.append(inter_splits[i], diff_splits[i]))
 
         # after creating the splits:

@@ -1,4 +1,5 @@
 import os
+
 import pandas as pd
 
 METRICS = 'metric'
@@ -35,25 +36,25 @@ class ResultsHandler:
             if os.path.isdir(os.path.join(input_files, directory)):
                 for filename in os.listdir(os.path.join(input_files, directory)):
                     if filename.startswith('results'):
-                        
+
                         if len(filename[:-4].split('_')[-1]) == 0:
                             suffix = 'overall'
                         else:
                             suffix = ''
-                        
+
                         results = pd.read_csv(os.path.join(input_files, directory, filename))
                         models = results.model.unique()
 
                         for model in models:
                             model_info = results[results[MODEL] == model]
-                            
+
                             acc = model_info[model_info[METRICS] == ACCURACY]['1'].mean()
                             roc = model_info[model_info[METRICS] == ROC]['1'].mean()
                             f1_score = model_info[model_info[METRICS] == 'fms']['1'].mean()
                             precision = model_info[model_info[METRICS] == PRECISION]['1'].mean()
                             recall = model_info[model_info[METRICS] == RECALL]['1'].mean()
                             specificity = model_info[model_info[METRICS] == SPECIFICITY]['1'].mean()
-                            
+
                             results_csv = results_csv.append({
                                 SETTINGS: filename[:-4].split('_')[-1] + suffix,
                                 MODEL: model,
@@ -64,7 +65,7 @@ class ResultsHandler:
                                 RECALL: recall,
                                 SPECIFICITY: specificity
                             }, ignore_index=True)
-        
+
         ResultsHandler.average_seeds(results_csv, dataset_name, foldername)
 
     @staticmethod
@@ -74,7 +75,7 @@ class ResultsHandler:
         for setting in settings:
             setting_groups = results[results[SETTINGS] == setting]
             models = results.model.unique()
-            
+
             for model in models:
                 setting_model_info = setting_groups[setting_groups[MODEL] == model]
                 if setting_model_info.empty:
@@ -95,23 +96,6 @@ class ResultsHandler:
                 spec_sd = round(setting_model_info[SPECIFICITY].std(), 2)
 
                 pmi = u"\u00B1"
-                # results_csv = results_csv.append({
-                #     SETTINGS: setting,
-                #     MODEL: model,
-                #     ACCURACY: acc,
-                #     ROC: roc,
-                #     F1_SCORE: f1_score,
-                #     PRECISION: precision,
-                #     RECALL: recall,
-                #     SPECIFICITY: specificity,
-                #
-                #     ACCURACY_SD: acc_sd,
-                #     ROC_SD: roc_sd,
-                #     F1_SD: f1_sd,
-                #     PREC_SD: prec_sd,
-                #     REC_SD: rec_sd,
-                #     SPEC_SD: spec_sd
-                # }, ignore_index=True)
 
                 results_csv = results_csv.append({
                     SETTINGS: setting,
@@ -123,7 +107,6 @@ class ResultsHandler:
                     RECALL: str(recall) + pmi + str(rec_sd),
                     SPECIFICITY: str(specificity) + pmi + str(spec_sd),
                 }, ignore_index=True)
-        
-        outfile = os.path.join(os.getcwd(), 'results', dataset_name, foldername, foldername+'.csv')
-        results_csv.to_csv(outfile, index=False, columns=RESULT_COLUMNS, encoding='utf-8-sig')
 
+        outfile = os.path.join("results", dataset_name, foldername, foldername + '.csv')
+        results_csv.to_csv(outfile, index=False, columns=RESULT_COLUMNS, encoding='utf-8-sig')

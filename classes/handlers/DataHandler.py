@@ -8,36 +8,35 @@ import os
 
 class DataHandler:
 
-    def __init__(self, mode: str, output_folder: str, extraction_method: str):
-        self.mode = mode
-        self.output_folder = output_folder
-        self.extraction_method = extraction_method
-        self.pid_file_paths = None
-        self.dataset_name = ParamsHandler.load_parameters('settings')['dataset']
+    def __init__(self, mode: str, extraction_method: str):
+        self.__mode = mode
+        self.__extraction_method = extraction_method
+        self.__pid_file_paths = {}
+        self.__dataset_name = ParamsHandler.load_parameters('settings')['dataset']
 
     def load_data(self, tasks: List) -> dict:
-        tasks_data = {task: None for task in tasks}
-        self.pid_file_paths = {task: os.path.join('assets', self.dataset_name, 'PIDs', self.mode + '_' +
-                                                  self.extraction_method + '_' + task + '_pids.csv') for task in tasks}
-
-        # extract PIDs
-        PIDExtractor(mode=self.mode, extraction_method=self.extraction_method, output_folder=self.output_folder,
-                     pid_file_paths=self.pid_file_paths, dataset_name=self.dataset_name).get_list_of_pids(tasks=tasks)
-
+        base_path = os.path.join('assets', self.__dataset_name, 'PIDs')
         for task in tasks:
-            print(task)
-            task_path = os.path.join(self.dataset_name, task)
-            params = ParamsHandler.load_parameters(task_path)
-            modalities = params['modalities']
-            feature_set = params['feature_sets']
+            file_name = "{}_{}_{}_pids.csv".format(self.__mode, self.__extraction_method, task)
+            self.__pid_file_paths[task] = os.path.join(base_path, file_name)
 
-            modality_data = {modality: None for modality in modalities}
+        pid_extractor = PIDExtractor(self.__mode, self.__extraction_method, self.__pid_file_paths, self.__dataset_name)
+        pid_extractor.extract_pids(tasks)
+
+        tasks_data = {}
+        for task in tasks:
+            print("\n Loading data for task '{}'...".format(task))
+            params = ParamsHandler.load_parameters(os.path.join(self.__dataset_name, task))
+            modalities, feature_set = params['modalities'], params['feature_sets']
+
+            modality_data = {}
             for modality in modalities:
-                modality_data[modality] = self.get_data(task, modality, feature_set, self.pid_file_paths[task])
-                tasks_data[task] = modality_data
+                print("\t -> Loading modality '{}'...".format(modality))
+                modality_data[modality] = self.get_data(task, modality, feature_set, self.__pid_file_paths[task])
+
+            tasks_data[task] = modality_data
 
         return tasks_data
-
 
     @staticmethod
     def get_data(task: str, modality: str, feature_set: dict, pid_file_path: str) -> dict:
@@ -45,10 +44,10 @@ class DataHandler:
         dataset_name = ParamsHandler.load_parameters('settings')['dataset']
         feature_path = os.path.join(dataset_name, 'feature_sets')
         feature_subsets_path = os.path.join(feature_path, 'feature_subsets')
-        
+
         data_path = os.path.join('datasets', dataset_name)
 
-        # get pids from a saved file, which was created by get_list_of_pids based on the conditions given to it
+        # get pids from a saved file, which was created by extract_pids based on the conditions given to it
         pids = pd.read_csv(pid_file_path)
 
         # initializing the dataset as the list of PIDs
@@ -65,7 +64,7 @@ class DataHandler:
             for feat in final_features:
                 to_select = ['interview']
                 if feat.startswith('eye'):
-                    print("--", feat)
+                    print("\t\t - {}".format(feat))
                     to_select.extend(ParamsHandler.load_parameters(os.path.join(feature_subsets_path, feat)))
                     eye_data = pd.read_csv(os.path.join(data_path, feat + '.csv'))
                     eye_dataset = eye_data.loc[eye_data['task'] == task]
@@ -74,11 +73,11 @@ class DataHandler:
                     dataset = pd.merge(dataset, eye_dataset, on='interview')
 
         elif modality == 'speech':
-            
+
             # NLP data files merging. No need to put it in the loop as that adds time
             text_data = pd.read_csv(os.path.join(data_path, 'text.csv'))
             acoustic_data = pd.read_csv(os.path.join(data_path, 'acoustic.csv'))
-            
+
             if dataset_name == 'canary':
                 task_mod_dict = {'CookieTheft': 1, 'Reading': 2, 'Memory': 3}
                 task_mod = task_mod_dict[task]
@@ -96,7 +95,7 @@ class DataHandler:
             for feat in final_features:
                 to_select = ['interview']
                 if not feat.startswith('eye'):
-                    print("--", feat)
+                    print("\t\t - {}".format(feat))
                     to_select.extend(ParamsHandler.load_parameters(os.path.join(feature_subsets_path, feat)))
 
                     if feat == 'fraser':
@@ -118,7 +117,7 @@ class DataHandler:
 
         # random sample
         dataset = dataset.sample(frac=1, random_state=10)
-        
+
         if dataset_name == 'canary':
             # labels
             labels = list(dataset['interview'])

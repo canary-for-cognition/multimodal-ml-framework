@@ -1,11 +1,12 @@
-from classes.data_splitters.DataSplitter import DataSplitter
-from classes.handlers.ParamsHandler import ParamsHandler
+import copy
+import os
+import random
 
 import numpy as np
 import pandas as pd
-import os
-import random
-import copy
+
+from classes.data_splitters.DataSplitter import DataSplitter
+from classes.handlers.ParamsHandler import ParamsHandler
 
 
 class StackingDataSplitter(DataSplitter):
@@ -28,13 +29,13 @@ class StackingDataSplitter(DataSplitter):
         if method == 1:
             # get list of superset_ids from the saved file
             # super_pids_file_path = os.path.join('assets', output_folder, extraction_method + '_super_pids.csv')
-            super_pids_file_path = os.path.join(os.getcwd(), 'assets', dataset_name, 'PIDs', self.mode +
+            super_pids_file_path = os.path.join(os.getcwd(), 'assets', dataset_name, 'PIDs', self._mode +
                                                 '_' + extraction_method + '_super_pids.csv')
             superset_ids = list(pd.read_csv(super_pids_file_path)['interview'])
 
             # random shuffle based on random seed
             random.Random(self.random_seed).shuffle(superset_ids)
-            splits = np.array_split(superset_ids, self.nfolds)
+            splits = np.array_split(superset_ids, self._num_folds)
 
         # create and fill x and y
         # x: from superset ids, find the pids in each of the given trained models and get their prediction values,
@@ -45,7 +46,7 @@ class StackingDataSplitter(DataSplitter):
         true_y = diag['diagnosis'] != 'HC'
         true_y.index = diag['interview']
 
-        x = np.empty(shape=(len(superset_ids), len(data)+1), dtype='object')
+        x = np.empty(shape=(len(superset_ids), len(data) + 1), dtype='object')
         x[:] = np.NaN
         y = np.empty(shape=(len(superset_ids), 2), dtype='object')
         labels = np.empty(shape=len(superset_ids), dtype='object')
@@ -55,7 +56,7 @@ class StackingDataSplitter(DataSplitter):
             for k, tr in enumerate(data.values()):
                 pids = list(tr.preds['ensemble'].keys())
                 if superset_ids[p] in pids:
-                    x[p][k+1] = tr.preds['ensemble'][superset_ids[p]]
+                    x[p][k + 1] = tr.preds['ensemble'][superset_ids[p]]
                     y[p][1] = true_y[superset_ids[p]]
 
         # now, for some modalities where the number of PIDs are less than the union (162), the 'within modality' x will
@@ -88,7 +89,7 @@ class StackingDataSplitter(DataSplitter):
                 nan_mask_row = np.invert(np.isnan(x_row_as_float))
                 x_masked_row = x_row_as_float[nan_mask_row].astype(int)
                 chosen_val = np.argmax(np.bincount(x_masked_row))
-                x[row, col+1] = bool(chosen_val)
+                x[row, col + 1] = bool(chosen_val)
 
         x = pd.DataFrame(x[:, 1:], index=x[:, 0], dtype='bool')
         y = pd.Series(y[:, 1], index=y[:, 0], dtype='bool')
@@ -109,7 +110,7 @@ class StackingDataSplitter(DataSplitter):
 
             # creating union of pids across tasks
             while len(uni_pids) > 1:
-                uni_pids = [np.union1d(uni_pids[i], uni_pids[i+1]) for i in range(len(uni_pids) - 1)]
+                uni_pids = [np.union1d(uni_pids[i], uni_pids[i + 1]) for i in range(len(uni_pids) - 1)]
             uni_pids = uni_pids[0]
 
             # difference in uni_pids and inter_pids
@@ -119,11 +120,11 @@ class StackingDataSplitter(DataSplitter):
             random.Random(self.random_seed).shuffle(inter_pids)
             random.Random(self.random_seed).shuffle(diff_pids)
 
-            inter_splits = np.array_split(inter_pids, self.nfolds)
-            diff_splits = np.array_split(diff_pids, self.nfolds)
+            inter_splits = np.array_split(inter_pids, self._num_folds)
+            diff_splits = np.array_split(diff_pids, self._num_folds)
 
             splits = []
-            for i in range(self.nfolds):
+            for i in range(self._num_folds):
                 splits.append(np.append(inter_splits[i], diff_splits[i]))
 
         # after creating the splits:

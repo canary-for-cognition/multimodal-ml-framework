@@ -1,8 +1,9 @@
-from classes.data_splitters.DataSplitter import DataSplitter
+import os
 
 import numpy as np
-import os
 from sklearn.model_selection import StratifiedKFold
+
+from classes.data_splitters.DataSplitter import DataSplitter
 
 
 class ModelEnsembleDataSplitter(DataSplitter):
@@ -16,8 +17,9 @@ class ModelEnsembleDataSplitter(DataSplitter):
         labels = np.array(data['labels'])
         fold_data = []
 
-        folds = StratifiedKFold(n_splits=self.nfolds, shuffle=True, random_state=self.random_seed).split(x, y, groups=labels)
-        output_file = os.path.join(os.getcwd(), 'assets', self.mode + 'cv_info.txt')
+        folds = StratifiedKFold(n_splits=self._num_folds, shuffle=True, random_state=self.random_seed).split(x, y,
+                                                                                                             groups=labels)
+        output_file = os.path.join(os.getcwd(), 'assets', self._mode + 'cv_info.txt')
 
         with open(output_file, 'w') as f:
             cnt = 0

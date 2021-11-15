@@ -1,8 +1,8 @@
-from classes.trainer.Trainer import Trainer
-from classes.trainer.SingleModelTrainer import SingleModelTrainer
-from classes.trainer.TaskFusionTrainer import TaskFusionTrainer
-from classes.trainer.ModelEnsembleTrainer import ModelEnsembleTrainer
-from classes.trainer.StackingTrainer import StackingTrainer
+from classes.trainers.Trainer import Trainer
+from classes.trainers.SingleModelTrainer import SingleModelTrainer
+from classes.trainers.TaskFusionTrainer import TaskFusionTrainer
+from classes.trainers.ModelEnsembleTrainer import ModelEnsembleTrainer
+from classes.trainers.StackingTrainer import StackingTrainer
 
 
 class TrainersFactory:

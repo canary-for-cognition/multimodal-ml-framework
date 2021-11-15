@@ -1,6 +1,6 @@
-from classes.trainer.Trainer import Trainer
+from classes.trainers.Trainer import Trainer
 from classes.cv.FeatureSelector import FeatureSelector
-from classes.handlers.ModelsHandler import ModelsHandler
+from classes.factories.ClassifiersFactory import ClassifiersFactory
 from classes.handlers.ParamsHandler import ParamsHandler
 from classes.factories.DataSplitterFactory import DataSplitterFactory
 
@@ -14,30 +14,79 @@ class TaskFusionTrainer(Trainer):
     def __init__(self):
         super().__init__()
 
-    '''
-    # def save_feature_importance(self, x, y, model_name, model, feature_names):
-    #     if model is None:
-    #         X_fs, feature_names = self.do_feature_selection_all(x.values, y,
-    #                                                             feature_names)
-    #         model = get_classifier(model_name)
-    #         model.fit(X_fs, y)
-    #         X = X_fs
-    #     feature_scores = get_feature_scores(model_name, model, feature_names, x)
-    #     return feature_scores
-    '''
+    @staticmethod
+    def average_results(data: list, model) -> object:
+        """
+        :param data: list of Trainer objects that contain attributes pred_probs, preds, etc.
+        :param model: classifier for which the aggregation is to be done (only used to refer to a particular entry in the dictionary)
+        :return: Trainer object with updated values
+        """
+
+        method = 'task_fusion'
+        avg_preds = {}
+        avg_pred_probs = {}
+
+        sub_data = None
+        num = 0
+        new_data = None
+
+        # This portion gets activated when across_tasks or across modalities aggregation is required
+        # since the model being passed is a single model (either GNB, or RF, or LR)
+        if type(model) == str:
+            new_data = data[-1][model]
+            num = len(data)
+            sub_data = np.array([data[t][model] for t in range(num)])
+
+        # This portion gets activated when within_tasks aggregation is required
+        # since the models being passed will be more than one
+        elif type(model) == list:
+            new_data = data[model[-1]]
+            num = len(model)
+            sub_data = np.array([data[m] for m in model])
+
+        # Find the union of all pids across all tasks
+        union_pids = np.unique(np.concatenate([list(sub_data[i].pred_probs[method].keys()) for i in range(num)]))
+        pred_probs_dict = {}
+
+        # averaging the pred_probs for a certain PID whenever it's seen across all tasks
+        for i in union_pids:
+            pred_probs_sum_list = np.zeros(3)
+            for t in range(num):
+                if i in sub_data[t].pred_probs[method]:
+                    pred_probs_sum_list[0] += sub_data[t].pred_probs[method][i][0]
+                    pred_probs_sum_list[1] += sub_data[t].pred_probs[method][i][1]
+                    pred_probs_sum_list[2] += 1
+            pred_probs_dict[i] = np.array(
+                [pred_probs_sum_list[0] / pred_probs_sum_list[2], pred_probs_sum_list[1] / pred_probs_sum_list[2]])
+
+        avg_pred_probs[method] = pred_probs_dict
+        new_data.pred_probs = avg_pred_probs
+
+        # preds ------------------------------------------------------------------------------------------------------
+
+        # assigning True or False for preds based on what the averaged pred_probs were found in the previous step
+        preds_dict = {}
+        for i in avg_pred_probs[method]:
+            preds_dict[i] = avg_pred_probs[method][i][0] < avg_pred_probs[method][i][1]
+
+        avg_preds[method] = preds_dict
+        new_data.preds = avg_preds
+
+        # Return the updated new_data - only pred_probs and preds are changed, the rest are the same as the initially chosen new_data
+        return new_data
 
     def train(self, data: dict, clf: str, seed: int, feature_set: str = '', feature_importance: bool = True):
-        self.clf = clf
-        self.method = 'task_fusion'
-        self.seed = seed
+        self._clf = clf
+        self._method = 'task_fusion'
+        self._seed = seed
 
-        self.x = data['x']
-        self.y = data['y']
-        self.labels = np.array(data['labels'])
+        self._x = data['x']
+        self._y = data['y']
+        self._labels = np.array(data['labels'])
 
-        feature_names = list(self.x.columns.values)
-        splitter = DataSplitterFactory().get(mode=self.mode)
-        self.splits = splitter.make_splits(data=data, seed=self.seed)
+        feature_names = list(self._x.columns.values)
+        splitter = DataSplitterFactory().get(mode=self._mode)
+        self._splits = splitter.make_splits(data=data, seed=self._seed)
 
         # defining metrics
         acc = []
@@ -49,13 +98,12 @@ class TaskFusionTrainer(Trainer):
 
         pred = {}
         pred_prob = {}
-        # feature_scores_fold = []
         k_range = None
 
-        print("Model %s" % self.clf)
+        print("Model %s" % self._clf)
         print("=========================")
 
-        for idx, fold in enumerate(self.splits):
+        for idx, fold in enumerate(self._splits):
             print("Processing fold: %i" % idx)
             x_train, y_train = fold['x_train'], fold['y_train'].ravel()
             x_test, y_test = fold['x_test'], fold['y_test'].ravel()
@@ -73,7 +121,7 @@ class TaskFusionTrainer(Trainer):
                 FeatureSelector().select_features(fold_data=fold, feature_names=feature_names, k_range=k_range)
 
             # fit the model
-            model = ModelsHandler.get_model(clf)
+            model = ClassifiersFactory.get_model(clf)
             model = model.fit(x_train_fs, y_train)
 
             # make predictions
@@ -98,25 +146,9 @@ class TaskFusionTrainer(Trainer):
             recall.append(r_scores)
             specificity.append(spec_scores)
 
-            '''
-            # if feature_importance:
-            #     feature_scores_fold.append(self.save_feature_importance(X=X_train_fs,
-            #                                                             y=None, model_name=model, model=clf,
-            #                                                             feature_names=selected_feature_names))
-            '''
-
-        self.save_results(method=self.method, acc=acc, fms=fms, roc=roc,
-                          precision=precision, recall=recall, specificity=specificity,
-                          pred=pred, pred_prob=pred_prob, k_range=k_range)
-
-        '''
-        # self.feature_scores_fold[self.method] = feature_scores_fold
-
-        # if feature_importance:  # get feature importance from the whole data
-        #     self.feature_scores_all[self.method] = \
-        #         self.save_feature_importance(X=self.X, y=self.y,
-        #                                      model_name=model, model=None, feature_names=feature_names)
-        '''
+        self._save_results(method=self._method, acc=acc, fms=fms, roc=roc,
+                            precision=precision, recall=recall, specificity=specificity,
+                            pred=pred, pred_prob=pred_prob, k_range=k_range)
 
         return self
 
@@ -138,13 +170,13 @@ class TaskFusionTrainer(Trainer):
         superset_ids = list(pd.read_csv(super_pids_file_path)['interview'])
 
         # random shuffle based on random seed
-        random.Random(self.seed).shuffle(superset_ids)
+        random.Random(self._seed).shuffle(superset_ids)
         splits = np.array_split(superset_ids, nfolds)
 
         method = 'task_fusion'
         pred = data.preds[method]
         pred_prob = data.pred_probs[method]
-        k_range = data.best_k[method]['k_range']
+        k_range = data._best_k[method]['k_range']
 
         # compute performance measures for each of the splits
         for i in splits:
@@ -186,8 +218,8 @@ class TaskFusionTrainer(Trainer):
             specificity.append(spec_scores)
 
         # save performance metrics
-        self.save_results(method, acc=acc, fms=fms, roc=roc,
-                          precision=precision, recall=recall, specificity=specificity,
-                          pred=pred, pred_prob=pred_prob, k_range=k_range)
+        self._save_results(method, acc=acc, fms=fms, roc=roc,
+                            precision=precision, recall=recall, specificity=specificity,
+                            pred=pred, pred_prob=pred_prob, k_range=k_range)
 
         return self
