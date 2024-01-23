@@ -30,7 +30,7 @@ PyYAML==5.4.1
 regex==2021.4.4
 requests==2.31.0
 scikit-learn==0.24.2
-scipy==1.6.3
+scipy==1.11.1
 seaborn==0.11.1
 semantic-version==2.8.5
 six==1.16.0
